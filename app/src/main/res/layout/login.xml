@@ -1,0 +1,78 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bglogin">
+
+    <EditText
+        android:id="@+id/acc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/pass"
+        android:layout_alignEnd="@+id/pass"
+        android:layout_above="@+id/pass"
+        android:layout_marginBottom="18dp"
+        android:textStyle="bold"
+        android:inputType="number"
+        android:ems="10"
+        android:hint="@string/acc">
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/pass"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:hint="@string/pass" />
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/checkBox"
+        android:layout_alignStart="@+id/acc"
+        android:layout_alignEnd="@+id/acc"
+        android:layout_marginTop="10dp"
+        android:text="@string/login" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/login"
+        android:layout_alignStart="@+id/login"
+        android:layout_below="@+id/checkBox"
+        android:layout_marginTop="14dp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:text="@string/title"
+        android:textAlignment="center"
+        android:textColor="#0000FF"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pass"
+        android:layout_alignStart="@+id/pass"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="0dp"
+        android:text="@string/luu_mat_khau" />
+
+</RelativeLayout>

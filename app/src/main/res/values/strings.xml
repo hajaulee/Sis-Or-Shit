@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Sisorshit</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="chart">Biểu đồ</string>
+    <string name="register">Đăng ký</string>
+    <string name="point_list">Bảng điểm</string>
+    <string name="action_settings">Dừng</string>
+    <string name="blank"></string>
+    <string name="recogn">Xử lý</string>
+    <string name="acc">Tài khoản SIS</string>
+    <string name="pass">Mật khẩu</string>
+    <string name="login">Đăng nhập</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="start">Bắt đầu đăng kí</string>
+    <string name="class_code">Nhập mã lớp</string>
+    <string name="class_code_list">Danh sách mã lớp đăng kí</string>
+    <string name="add_class">Thêm</string>
+    <string name="reload">更新</string>
+    <string name="title">ĐĂNG NHẬP TÀI KHOẢN SINH VIÊN</string>
+    <string name="status">Trạng thái đăng ký</string>
+    <string name="luu_mat_khau">Sử dụng vân tay để đăng nhập lần sau</string>
+</resources>
