@@ -1,0 +1,31 @@
+#Internal package file, do not edit.
+#Wed May 16 20:42:28 ICT 2018
+2.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\51
+5.set=ASSET
+0.path=classes.dex
+2.baseType=DIRECTORY
+3.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\50
+2.set=DEX
+1.path=classes.dex
+4.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\49
+count=7
+5.baseType=DIRECTORY
+2.path=classes.dex
+5.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\assets\\debug
+4.set=DEX
+3.path=classes.dex
+6.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\53
+3.baseType=DIRECTORY
+1.set=DEX
+4.path=classes.dex
+6.set=DEX
+1.baseType=DIRECTORY
+6.baseType=DIRECTORY
+5.path=data.trained
+0.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\52
+0.baseType=DIRECTORY
+3.set=DEX
+6.path=classes.dex
+1.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\54
+4.baseType=DIRECTORY
+0.set=DEX

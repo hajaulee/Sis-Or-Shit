@@ -1,0 +1,11 @@
+#Internal package file, do not edit.
+#Sun May 27 22:07:55 ICT 2018
+1.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dex\\release\\0
+0.baseType=DIRECTORY
+1.baseType=DIRECTORY
+count=2
+1.set=DEX
+0.path=data.trained
+0.set=ASSET
+0.base=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\assets\\release
+1.path=classes.dex
