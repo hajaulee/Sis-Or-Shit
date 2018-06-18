@@ -37,11 +37,12 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+
+import static com.hajaulee.sisorshit.PostTaskAction.*;
+
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class LoginScreen extends Activity {
-    public static final String LOGIN_SIS = "LOGIN_SIS";
-    public static final String LOGIN_DKSIS_WITH_CAPTCHA = "LOGIN_DKSIS_WITH_CAPTCHA";
-    public static final String LOGIN_SIS_GET_MARK_TABLE = "LOGIN_SIS_GET_MARK_TABLE";
+
     // Declare a string variable for the key we’re going to use in our fingerprint authentication
     private static final String KEY_NAME = "yourKey";
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 0;

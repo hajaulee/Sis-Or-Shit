@@ -1,11 +1,20 @@
 package com.hajaulee.sisorshit;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
+
+import static android.app.PendingIntent.FLAG_ONE_SHOT;
 
 /**
  * Created by HaJaU on 07-11-17.
@@ -13,6 +22,48 @@ import android.widget.TextView;
 
 public class WidgetUtils {
     private Activity sender;
+    public static final String ACTION = "ACTION";
+    public static final String OPEN_MARK_LIST = "OPEN_MARK_LIST";
+    static private final String CHANNEL_1 = "CHANNEL_1";
+
+
+    public static void sendNotification(Context caller, String title, String message) {
+        NotificationCompat.Builder b = new NotificationCompat.Builder(caller, CHANNEL_1);
+        Intent intent = new Intent(caller, MainActivity.class);
+        intent.putExtra(ACTION, OPEN_MARK_LIST);
+        PendingIntent contentIntent =
+                PendingIntent.getActivity(caller, 0, intent, FLAG_ONE_SHOT);
+
+        b.setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.mark_updated)
+                .setLargeIcon(BitmapFactory.decodeResource(caller.getResources(), R.mipmap.ic_launcher))
+                .setContentTitle(title)
+                .setContentText(message)
+                .setContentInfo("INFO")
+                .setContentIntent(contentIntent);
+
+        NotificationManager nm = (NotificationManager) caller.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = b.build();
+        nm.notify(1, notification);
+    }
+
+    public static void notifyNewestSubject(Context caller) {
+        int newSubjectCount = MainActivity.bangDiemAll.size();
+        if (newSubjectCount == 0) {
+            sendNotification(caller, "Error", "Not found");
+            return;
+        }
+        String[] newestSubject = MainActivity.bangDiemAll.get(newSubjectCount - 1).split("__");
+        WidgetUtils.sendNotification(caller,
+                "Cập nhật bảng điểm",
+                "Môn:" + newestSubject[2] +
+                        "  GK:" + newestSubject[5] +
+                        "  CK:" + newestSubject[6] +
+                        "  Loại:" + newestSubject[7]);
+
+    }
 
     public WidgetUtils(Activity sender) {
         this.sender = sender;

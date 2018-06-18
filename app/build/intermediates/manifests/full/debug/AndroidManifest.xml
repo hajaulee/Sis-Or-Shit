@@ -43,6 +43,8 @@
             android:screenOrientation="portrait" >
         </activity>
 
+        <service android:name="com.hajaulee.sisorshit.UpdateMarkService" />
+
         <meta-data
             android:name="android.support.VERSION"
             android:value="26.1.0" />

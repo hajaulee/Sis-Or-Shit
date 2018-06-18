@@ -13,6 +13,8 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 
 public class StaticFunc {
+
+
 	public static String captchaToText(Bitmap bc, ArrayList<int[][]>[] trainedData) {
 		String captchaText = "";
 		Bitmap[] imageArray = new Bitmap[6];

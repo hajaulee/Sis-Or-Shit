@@ -1,9 +1,6 @@
 package com.hajaulee.sisorshit;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -50,30 +46,43 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.hajaulee.sisorshit.PostTaskAction.LOGIN_DKSIS_WITH_CAPTCHA;
+import static com.hajaulee.sisorshit.PostTaskAction.LOGIN_SIS;
+import static com.hajaulee.sisorshit.PostTaskAction.LOGIN_SIS_GET_MARK_TABLE;
+import static com.hajaulee.sisorshit.PostTaskAction.UPDATE_MARK_LIST;
+
 @SuppressWarnings("deprecation")
 public class PostTask extends AsyncTask<String, String, String> {
-    Activity sender;
+    private Activity sender = null;
+    private Context context = null;
     private String captchaLink;
-    private String task;
+    private PostTaskAction task;
     private HttpResponse response;
     private HttpEntity entity;
-    public static HttpClient httpclient;
+    private static HttpClient httpclient;
     private String responseString = "";
     protected String acc;
     protected String pass;
     private boolean connected = false;
+    private PostTask startPostTask;
 
-    public PostTask(Activity msender, String mtask) {
+    public PostTask(Activity msender, PostTaskAction mtask) {
         this.sender = msender;
+        this.task = mtask;
+    }
+
+    public PostTask(Context msender, PostTaskAction mtask) {
+        this.context = msender;
         this.task = mtask;
     }
 
     @Override
     protected String doInBackground(String... data) {
+        if (isCancelled())
+            return null;
         HttpParams httpParams = new BasicHttpParams();
 
         // It's always good to set how long they should try to connect. In this
@@ -83,13 +92,13 @@ public class PostTask extends AsyncTask<String, String, String> {
         // Create a new HttpClient and Post Header
         httpclient = new DefaultHttpClient(httpParams);
         HttpPost httppost = null;
-        Log.d("Start Task", task);
+        Log.d("Start Task", task.name());
         try {
             Log.d("Task", task + " Pass :" + 1);
             // add data
             List<NameValuePair> nameValuePairs;
             // nameValuePairs.add(new BasicNameValuePair("data", data[0]));
-            if (task.equals(LoginScreen.LOGIN_SIS)) {
+            if (task.equals(LOGIN_SIS)) {
                 ProgressBar bar = (ProgressBar) sender.findViewById(R.id.progressBar);
                 bar.setProgress(0);
                 setProgressSmoothly(bar, 25);
@@ -106,7 +115,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                 response = httpclient.execute(httppost);
                 entity = response.getEntity();
                 responseString = EntityUtils.toString(entity, "UTF-8");
-            } else if (task.equals(LoginScreen.LOGIN_SIS_GET_MARK_TABLE)) {
+            } else if (task.equals(LOGIN_SIS_GET_MARK_TABLE) || task.equals(UPDATE_MARK_LIST)) {
                 httppost = new HttpPost("http://sis.hust.edu.vn/");
                 nameValuePairs = new ArrayList<NameValuePair>(3);
                 nameValuePairs.add(new BasicNameValuePair("__EVENTTARGET", data[0]));
@@ -121,14 +130,16 @@ public class PostTask extends AsyncTask<String, String, String> {
                 responseString = EntityUtils.toString(entity, "UTF-8");
                 int vLogout = responseString.indexOf("vLogout");
                 if (vLogout == -1) {
-                    Toast.makeText(sender, "Có lỗi xảy ra!", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(sender!=null?sender:context, "Có lỗi xảy ra!", Toast.LENGTH_LONG).show();
+                    Log.e(UpdateMarkService.TAG, "Mark list load fail");
+//                    Log.e(UpdateMarkService.TAG, acc + pass);
                     return "";
                 }
                 httppost = new HttpPost("http://sis.hust.edu.vn/ModuleGradeBook/StudentCourseMarks.aspx");
                 response = httpclient.execute(httppost);
                 entity = response.getEntity();
                 responseString = EntityUtils.toString(entity, "UTF-8");
-            } else if (task.equals(LoginScreen.LOGIN_DKSIS_WITH_CAPTCHA)) {
+            } else if (task.equals(LOGIN_DKSIS_WITH_CAPTCHA)) {
                 boolean flag = true;
                 acc = data[1];
                 pass = data[2];
@@ -137,7 +148,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                 httppost.addHeader("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36");
                 printToScreen("Khởi tạo kết nối");
-                while (flag) {
+                while (flag && !isCancelled()) {
                     Log.d("Start", "tack 2");
                     response = MainActivity.registerHttpClient.execute(httppost);
                     Log.d("Task", task + " Pass :" + 2);
@@ -314,38 +325,23 @@ public class PostTask extends AsyncTask<String, String, String> {
         }
         return null;
     }
-    public void notifyThis(String title, String message) {
-        NotificationCompat.Builder b = new NotificationCompat.Builder(this.sender);
-        PendingIntent contentIntent =
-                PendingIntent.getActivity(this.sender, 0, new Intent(this.sender, MainActivity.class), 0);
 
-        b.setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker("{your tiny message}")
-                .setContentTitle(title)
-                .setContentText(message)
-                .setContentInfo("INFO").setContentIntent(contentIntent);
-
-        NotificationManager nm = (NotificationManager) this.sender.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = b.build();
-        nm.notify(1, notification);
-    }
     @SuppressWarnings("unchecked")
     @Override
     protected void onPostExecute(String ecec) {
-        Log.d("End Task", task);
-        if (task.equals(LoginScreen.LOGIN_DKSIS_WITH_CAPTCHA)) {
-            if(!connected){
+        if (isCancelled())
+            return;
+        Log.d("End Task", task.name());
+        if (task.equals(LOGIN_DKSIS_WITH_CAPTCHA)) {
+            if (!connected && !isCancelled()) {
                 Snackbar.make(sender.getCurrentFocus(), "Máy chủ lỗi, đang đăng nhập lại!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 //doInBackground("",acc,pass);
-                PostTask startPostTask = new PostTask(sender, LoginScreen.LOGIN_DKSIS_WITH_CAPTCHA);
+                startPostTask = new PostTask(sender, LOGIN_DKSIS_WITH_CAPTCHA);
                 startPostTask.execute("ctl00$cLogIn1$bt_cLogIn", acc, pass);
             }
-        } else if (task.equals(LoginScreen.LOGIN_SIS_GET_MARK_TABLE)) {
-            if (responseString.length() < 1069) {
+        } else if (task.equals(LOGIN_SIS_GET_MARK_TABLE) || task.equals(UPDATE_MARK_LIST)) {
+            if (responseString.length() < 1069 && task.equals(LOGIN_SIS_GET_MARK_TABLE)) {
                 sender.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -355,7 +351,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                 });
                 return;
             }
-            //notifyThis("Cập nhật bảng điểm", new Date().toString());
+            //sendNotification("Cập nhật bảng điểm", new Date().toString());
             MainActivity.spin.clear();
             int currentSubjectCount = MainActivity.bangDiemAll.size();
             MainActivity.bangDiem.clear();
@@ -405,41 +401,36 @@ public class PostTask extends AsyncTask<String, String, String> {
             MainActivity.spin.add("Điểm F");
             MainActivity.bangDiemAll = (ArrayList<String>) MainActivity.bangDiem.clone();
             int newSubjectCount = MainActivity.bangDiemAll.size();
-            if (newSubjectCount > currentSubjectCount){
-                notifyThis("Cập nhật bảng điểm", "Vừa có môn mới được cập nhật");
+
+            boolean allowAlwaysShowNotify = UpdateMarkService.allowAlwaysShow(context);
+            if (newSubjectCount > currentSubjectCount || allowAlwaysShowNotify) {
+                WidgetUtils.notifyNewestSubject(sender!=null?sender:context);
             }
-            sender.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    MainActivity.bangDiemAdapter.notifyDataSetChanged();
-                    MainActivity.spinAdapter.notifyDataSetChanged();
-                    ((MainActivity)sender).setCurrentSemesterSelected();
-                }
-            });
+            Log.d(UpdateMarkService.TAG, "AlwaysShow: " + allowAlwaysShowNotify);
             saveMarkList();
-            sender.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    sender.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Snackbar.make(sender.findViewById(R.id.fab), "Đã cập nhật lại dữ liệu!", Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
-                        }
-                    });
-                    ((MainActivity)sender).showChartOfCPA();
-                    ((MainActivity)sender).showChartOfPoint();
-                }
-            });
-        } else if (task.equals(LoginScreen.LOGIN_SIS)) {
+            if (task.equals(LOGIN_SIS_GET_MARK_TABLE)) {
+                sender.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Snackbar.make(sender.findViewById(R.id.fab), "Đã cập nhật lại dữ liệu!", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                        MainActivity.bangDiemAdapter.notifyDataSetChanged();
+                        MainActivity.spinAdapter.notifyDataSetChanged();
+                        ((MainActivity) sender).setCurrentSemesterSelected();
+                        ((MainActivity) sender).showChartOfCPA();
+                        ((MainActivity) sender).showChartOfPoint();
+                    }
+                });
+            }
+        } else if (task.equals(LOGIN_SIS)) {
             int vLogout = responseString.indexOf("vLogout");
             ProgressBar bar = (ProgressBar) sender.findViewById(R.id.progressBar);
             if (vLogout != -1) {
                 // When logged
                 //Save acc and pass word for fingerprint login
-                LoginScreen loginScreen = (LoginScreen)sender;
+                LoginScreen loginScreen = (LoginScreen) sender;
                 CheckBox checkBox = (CheckBox) loginScreen.findViewById(R.id.checkBox);
-                if(checkBox.isChecked())
+                if (checkBox.isChecked())
                     setFileContentToDataDir("acc4fing", acc + "," + pass);
                 setProgressSmoothly(bar, 99);
                 String userName = Html
@@ -476,8 +467,8 @@ public class PostTask extends AsyncTask<String, String, String> {
     }
 
     public void saveMarkList() {
-        File file = new File(sender.getApplicationInfo().dataDir + "/marktable.jav");
-        File file1 = new File(sender.getApplicationInfo().dataDir + "/hocki.jav");
+        File file = new File((sender!=null?sender:context).getApplicationInfo().dataDir + "/marktable.jav");
+        File file1 = new File((sender!=null?sender:context).getApplicationInfo().dataDir + "/hocki.jav");
         try {
             BufferedWriter br = new BufferedWriter(new FileWriter(file));
             BufferedWriter br1 = new BufferedWriter(new FileWriter(file1));
@@ -500,24 +491,10 @@ public class PostTask extends AsyncTask<String, String, String> {
         String mms = ((TextView) sender.findViewById(R.id.outScreen)).getText().toString();
         int c = mms.length() - mms.indexOf(".");
         StringBuffer toPrint = new StringBuffer("Đang đăng nhập");
-        if(c > mms.length())
-            c = 0;
-        c = (c+1)%6;
+        c = c > mms.length() ? 0 : (c + 1) % 6;
         for (int i = 0; i < c; i++)
             toPrint.append('.');
         printToScreen(toPrint.toString() + explain);
-//        if (c > mms.length())
-//            printToScreen("Đang đăng nhập.");
-//        else if (c == 1)
-//            printToScreen("Đang đăng nhập..");
-//        else if (c == 2)
-//            printToScreen("Đang đăng nhập...");
-//        else if (c == 3)
-//            printToScreen("Đang đăng nhập....");
-//        else if (c == 4)
-//            printToScreen("Đang đăng nhập.....");
-//        else if (c == 5)
-//            printToScreen("Đang đăng nhập");
 
     }
 
@@ -751,6 +728,13 @@ public class PostTask extends AsyncTask<String, String, String> {
         }
     }
 
+    @Override
+    protected void onCancelled() {
+        Log.d("onCancelled", startPostTask.hashCode() + "");
+        startPostTask.cancel(true);
+        startPostTask = null;
+        super.onCancelled();
+    }
 }
 
 class DkSisState {

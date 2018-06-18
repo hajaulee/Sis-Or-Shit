@@ -57,16 +57,18 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+
+import static com.hajaulee.sisorshit.PostTaskAction.LOGIN_DKSIS_WITH_CAPTCHA;
+import static com.hajaulee.sisorshit.PostTaskAction.LOGIN_SIS_GET_MARK_TABLE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static String acc;
-    String pass;
+    public static String pass;
     private int currentLayoutId = R.id.nav_register;
     private int[] LAYOUTS_OF_APP = {R.id.register_layout, R.id.point_list_layout, R.id.chart_layout};
     @SuppressWarnings("unchecked")
@@ -86,12 +88,13 @@ public class MainActivity extends AppCompatActivity
     Toolbar toolbar;
     Spinner dropdown;
     private PostTask startPostTask;
+    private static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         HttpParams httpParams = new BasicHttpParams();
-
+        instance = this;
         // It's always good to set how long they should try to connect. In this
         // this example, five seconds.
         HttpConnectionParams.setConnectionTimeout(httpParams, 8000);
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity
                 view.startAnimation(rotate);
 
                 if (currentLayoutId == R.id.nav_listmark) {
-                    refreshPointList(view, dropdown);
+                    refreshMarkList(view, dropdown);
                     Snackbar.make(view, "Đang tải lại danh sách điểm.", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
@@ -141,7 +144,7 @@ public class MainActivity extends AppCompatActivity
                             toolbar.setTitle(R.string.register);
                         } else if (currentLayoutId == R.id.nav_listmark) {
                             toolbar.setTitle(R.string.point_list);
-                        } else if (currentLayoutId == R.id.nav_chart){
+                        } else if (currentLayoutId == R.id.nav_chart) {
                             toolbar.setTitle(R.string.chart);
                         }
                     }
@@ -163,6 +166,12 @@ public class MainActivity extends AppCompatActivity
             userNameView.setText(USERNAME);
             userEmailView.setText(acc + "@student.hust.edu.vn");
         }
+        if (WidgetUtils.OPEN_MARK_LIST.equals(getIntent().getStringExtra(WidgetUtils.ACTION))) {
+            showMarkListLayout();
+        }
+        loadMarkList();
+        startService(new Intent(this, UpdateMarkService.class));
+
     }
 
     @Override
@@ -188,15 +197,42 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_stop) {
             startPostTask.cancel(true);
+            startPostTask = null;
             findViewById(R.id.classCode).setEnabled(true);
             findViewById(R.id.add).setEnabled(true);
             findViewById(R.id.start).setEnabled(true);
             findViewById(R.id.fab).setVisibility(View.VISIBLE);
             return true;
+        }else if (id == R.id.action_showNotify){
+            boolean allow = UpdateMarkService.allowAlwaysShow(this);
+            if (UpdateMarkService.allowAlwaysShow(this, allow^=true)){
+                Toast.makeText(this, "Luôn hiện thông báo", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(this, "Chỉ hiện khi có điểm môn mới", Toast.LENGTH_SHORT).show();
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showMarkListLayout() {
+        showLayout(R.id.point_list_layout, R.drawable.ic_refresh);
+        if (bangDiemAll.isEmpty()) {
+            loadMarkList();
+        }
+        setCurrentSemesterSelected();
+    }
+
+    private void showChartLayout() {
+        showLayout(R.id.chart_layout, -1);
+        if (bangDiemAll.isEmpty()) {
+            Snackbar.make(fab, "Đang tải lại danh sách điểm.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            loadMarkList();
+        }
+        showChartOfPoint();
+        showChartOfCPA();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -208,19 +244,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_register) {
             showLayout(R.id.register_layout, R.drawable.ic_play_arrow);
         } else if (id == R.id.nav_listmark) {
-            showLayout(R.id.point_list_layout, R.drawable.ic_refresh);
-            if(bangDiemAll.isEmpty()){
-                loadMarkList();
-            }
+            showMarkListLayout();
         } else if (id == R.id.nav_chart) {
-            showLayout(R.id.chart_layout, -1);
-            if(bangDiemAll.isEmpty()){
-                Snackbar.make(fab, "Đang tải lại danh sách điểm.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                loadMarkList();
-            }
-            showChartOfPoint();
-            showChartOfCPA();
+            showChartLayout();
         } else if (id == R.id.nav_logout) {
             logout();
         }
@@ -241,12 +267,16 @@ public class MainActivity extends AppCompatActivity
             return "";
         }
     }
-    public void setCurrentSemesterSelected(){
+
+    public void setCurrentSemesterSelected() {
         int countOfOption = dropdown.getAdapter().getCount();
         dropdown.setSelection(countOfOption - 6);
     }
+
     @SuppressWarnings("unchecked")
     public void loadMarkList() {
+        Snackbar.make(fab, "Đang tải lại danh sách điểm.", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
         File file = new File(getApplicationInfo().dataDir + "/marktable.jav");
         File file1 = new File(getApplicationInfo().dataDir + "/hocki.jav");
         try {
@@ -282,10 +312,9 @@ public class MainActivity extends AppCompatActivity
             br.close();
             br1.close();
             Log.d("Had data", "cc");
-            setCurrentSemesterSelected();
         } catch (Exception e) {
             Log.d("Not data", "cc");
-            refreshPointList(null, dropdown);
+            refreshMarkList(null, dropdown);
         }
     }
 
@@ -328,6 +357,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void checkUserLogged() {
+        checkUserLogged(true);
+    }
+
+    public void checkUserLogged(boolean openLoginScreen) {
         try {
             FileInputStream loginData = new FileInputStream(getApplicationInfo().dataDir + "/tokuda.jav.tmp");
             ObjectInputStream ios = new ObjectInputStream(loginData);
@@ -350,10 +383,12 @@ public class MainActivity extends AppCompatActivity
                 e1.printStackTrace();
             }
         } catch (Exception e) {
-            Intent i = new Intent(this, LoginScreen.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            this.startActivity(i);
-            this.finish();
+            if (openLoginScreen) {
+                Intent i = new Intent(this, LoginScreen.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                this.startActivity(i);
+                this.finish();
+            }
         }
     }
 
@@ -367,8 +402,9 @@ public class MainActivity extends AppCompatActivity
         ois.close();
         return digit;
     }
-    public static double diemChuDoiRaSo(String diemchu){
-        switch (diemchu){
+
+    public static double diemChuDoiRaSo(String diemchu) {
+        switch (diemchu) {
             case "A":
             case "A+":
                 return 4;
@@ -377,7 +413,7 @@ public class MainActivity extends AppCompatActivity
             case "B":
                 return 3;
             case "C+":
-                 return 2.5;
+                return 2.5;
             case "C":
                 return 2;
             case "D+":
@@ -388,6 +424,7 @@ public class MainActivity extends AppCompatActivity
 
         return 0;
     }
+
     public void loadButtonsAndListview() {
         Button start = (Button) findViewById(R.id.start);
         Button add = (Button) findViewById(R.id.add);
@@ -428,7 +465,7 @@ public class MainActivity extends AppCompatActivity
                         for (String a : bangDiemAll) {
                             String[] infoMon = a.split("__");
                             int tc = Integer.parseInt(infoMon[3]);
-                            tongTc+= tc;
+                            tongTc += tc;
                             currentCPA += tc * diemChuDoiRaSo(infoMon[7]);
 
                             if (a.indexOf(text) != -1)
@@ -443,10 +480,10 @@ public class MainActivity extends AppCompatActivity
                                         "&nbsp;&nbsp;&nbsp;&nbsp;<font color=\"green\" >GPA:</font> " + jav[1] + "</b><br>TC qua: " + jav[3] +
                                         "&nbsp;&nbsp;TC tích lũy: " + jav[4] + "&nbsp;&nbsp;TC nợ ĐK: " + jav[5] + "&nbsp;&nbsp;TC ĐK: " + jav[6]));
                                 break;
-                            }else{
+                            } else {
                                 double currentGPA = 0;
                                 int soTC = 0;
-                                for(String mon: bangDiem){
+                                for (String mon : bangDiem) {
                                     String[] info = mon.split("__");
                                     int tc = Integer.parseInt(info[3]);
                                     soTC += tc;
@@ -537,7 +574,7 @@ public class MainActivity extends AppCompatActivity
                 EditText in = (EditText) findViewById(R.id.classCode);
                 String classCode = in.getText().toString();
 
-                if (classList.indexOf(classCode) == -1 ){
+                if (classList.indexOf(classCode) == -1) {
                     in.setText("");
                     if (classList.indexOf("-" + classCode) != -1)
                         classList.remove("-" + classCode);
@@ -569,7 +606,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View v) {
-                refreshPointList(v, dropdown);
+                refreshMarkList(v, dropdown);
 //                dropdown.setSelection(0);
 //                PostTask x = new PostTask(MainActivity.this, LoginScreen.LOGIN_SIS_GET_MARK_TABLE);
 //                x.execute("ctl00$cLogIn1$bt_cLogIn", acc, pass);
@@ -582,13 +619,13 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.add).setEnabled(false);
         findViewById(R.id.start).setEnabled(false);
         findViewById(R.id.fab).setVisibility(View.INVISIBLE);
-        startPostTask = new PostTask(MainActivity.this, LoginScreen.LOGIN_DKSIS_WITH_CAPTCHA);
+        startPostTask = new PostTask(MainActivity.this, LOGIN_DKSIS_WITH_CAPTCHA);
         startPostTask.execute("ctl00$cLogIn1$bt_cLogIn", acc, pass);
     }
 
-    public void refreshPointList(View v, Spinner dropdown) {
+    public void refreshMarkList(View v, Spinner dropdown) {
         dropdown.setSelection(0);
-        PostTask x = new PostTask(MainActivity.this, LoginScreen.LOGIN_SIS_GET_MARK_TABLE);
+        PostTask x = new PostTask(MainActivity.this, LOGIN_SIS_GET_MARK_TABLE);
         x.execute("ctl00$cLogIn1$bt_cLogIn", acc, pass);
     }
 
@@ -606,9 +643,9 @@ public class MainActivity extends AppCompatActivity
             findViewById(id).setVisibility(View.INVISIBLE);
         }
         findViewById(layoutId).setVisibility(View.VISIBLE);
-        if(floatButtonResource == -1) {
+        if (floatButtonResource == -1) {
             fab.setVisibility(View.INVISIBLE);
-        }else{
+        } else {
             fab.setVisibility(View.VISIBLE);
             fab.setImageResource(floatButtonResource);
         }
@@ -660,12 +697,12 @@ public class MainActivity extends AppCompatActivity
         barChart.animateY(2000);
     }
 
-    public void showChartOfCPA(){
+    public void showChartOfCPA() {
         LineChart lineChart = (LineChart) findViewById(R.id.line_chart);
         ArrayList<Entry> lineEntriesCPA = new ArrayList<>();
         ArrayList<Entry> lineEntriesGPA = new ArrayList<>();
         ArrayList<String> lineLabels = new ArrayList<>();
-        for (int i = 0; i < ketQuaHocTap.size(); i++){
+        for (int i = 0; i < ketQuaHocTap.size(); i++) {
             String[] thanhTich1Ky = ketQuaHocTap.get(i).split("__");
             lineEntriesCPA.add(new Entry(Float.parseFloat(thanhTich1Ky[2]), i));
             lineEntriesGPA.add(new Entry(Float.parseFloat(thanhTich1Ky[1]), i));
@@ -681,7 +718,7 @@ public class MainActivity extends AppCompatActivity
         dataSets.add(dataSetCPA);
         dataSets.add(dataSetGPA);
         LimitLine xs = new LimitLine(3.6f, "Xuất sắc");
-        xs.enableDashedLine(3.6f,3.2f,2.0f);
+        xs.enableDashedLine(3.6f, 3.2f, 2.0f);
         xs.setTextSize(9f);
         xs.setLineColor(Color.BLUE);
         LimitLine g = new LimitLine(3.2f, "Giỏi");
@@ -700,11 +737,15 @@ public class MainActivity extends AppCompatActivity
         lineChart.getAxisLeft().addLimitLine(k);
         lineChart.getAxisLeft().addLimitLine(tb);
 
-        LineData lineData = new LineData(lineLabels, (List)dataSets);
+        LineData lineData = new LineData(lineLabels, (List) dataSets);
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         lineChart.setDescription("");
         lineChart.setData(lineData);
         lineChart.animateY(2000);
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
     }
 }

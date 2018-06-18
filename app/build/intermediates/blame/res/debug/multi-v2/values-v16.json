@@ -4,17 +4,7 @@
             "outputFile": "F:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v16\\values-v16.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\HaJaU\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\117489d4aaa372f1b1038b3939cda567\\res\\values-v16\\values-v16.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "65",
-                        "endOffsets": "116"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\HaJaU\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\109bdb2819d9de7ea3d75638bc97f139\\res\\values-v16\\values-v16.xml",
+                    "source": "C:\\Users\\HaJaU\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\71a1ff39337d9e6d552d033becc11b22\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -30,6 +20,16 @@
                         "endLines": "6",
                         "endColumns": "12",
                         "endOffsets": "289"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\HaJaU\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\e0be6c885cc8e1e337ad2a7a466f37ea\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
                     }
                 }
             ]
