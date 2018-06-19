@@ -1,6 +1,9 @@
 package com.hajaulee.sisorshit;
 
 import android.app.Service;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -22,7 +25,7 @@ public class UpdateMarkService extends Service {
     static private boolean isRunning = false;
     static private Timer timer = new Timer();
     static final int DELAY = 1000;
-    static final int PERIOD = 1800000;
+    static final int PERIOD = 600000;
     static private String ACC;
     static private String PASSWORD;
 
@@ -53,8 +56,10 @@ public class UpdateMarkService extends Service {
     }
 
 
+
     @Override
     public void onCreate() {
+
 
         try{
             FileInputStream loginData = new FileInputStream(getApplicationInfo().dataDir + "/tokuda.jav.tmp");

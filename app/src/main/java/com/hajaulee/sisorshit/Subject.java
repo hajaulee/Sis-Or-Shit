@@ -1,6 +1,12 @@
 package com.hajaulee.sisorshit;
 
+import android.util.Log;
+
+import java.util.Arrays;
+
 public class Subject {
+    private static final String TAG = "Subject";
+
     private int semester;
     private int credit;
     private int classId;
@@ -26,8 +32,50 @@ public class Subject {
     }
 
     public static Subject createSubject(String[] a) {
-        return new Subject(Integer.valueOf(a[0]), Integer.valueOf(a[3]), Integer.valueOf(a[5]),
-                a[1], a[2], a[7],
-                Float.valueOf(a[5]), Float.valueOf(a[6]));
+        try {
+            return new Subject(Integer.parseInt(a[0]), Integer.parseInt(a[3]), Integer.parseInt(a[4]),
+                    a[1], a[2], a[7],
+                    Float.parseFloat(a[5]),
+                    Float.parseFloat(a[6]));
+        }catch (Exception e){
+            Log.e(TAG, Arrays.toString(a) + e.toString());
+            return null;
+        }
+    }
+
+    public static Subject createSubject(String a){
+        return createSubject(a.split("__"));
+    }
+
+    public int getSemester() {
+        return semester;
+    }
+
+    public int getCredit() {
+        return credit;
+    }
+
+    public int getClassId() {
+        return classId;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public String getRank() {
+        return rank;
+    }
+
+    public float getMidTermScore() {
+        return midTermScore;
+    }
+
+    public float getFinalExamScore() {
+        return finalExamScore;
     }
 }

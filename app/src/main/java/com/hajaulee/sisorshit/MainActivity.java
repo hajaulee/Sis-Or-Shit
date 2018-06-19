@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_stop) {
-            startPostTask.cancel(true);
+            startPostTask.setCancel(true);
             startPostTask = null;
             findViewById(R.id.classCode).setEnabled(true);
             findViewById(R.id.add).setEnabled(true);
@@ -438,6 +438,8 @@ public class MainActivity extends AppCompatActivity
         dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (selectedItemView == null)
+                    position = 0;
                 bangDiem.clear();
                 TextView thanhTich = (TextView) findViewById(R.id.thanhtich);
                 if (position == 0) {
@@ -446,7 +448,8 @@ public class MainActivity extends AppCompatActivity
                         bangDiem.add(a);
                 } else {
                     String text = ((TextView) selectedItemView).getText().toString();
-                    if (text.indexOf("20") == -1) {
+
+                    if (!text.contains("20")) {
                         int mon = 0;
                         int tin = 0;
                         text = text.substring(text.lastIndexOf(' ') + 1);

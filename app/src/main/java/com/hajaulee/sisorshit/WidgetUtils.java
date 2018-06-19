@@ -46,7 +46,10 @@ public class WidgetUtils {
 
         NotificationManager nm = (NotificationManager) caller.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = b.build();
-        nm.notify(1, notification);
+
+        if (nm != null) {
+            nm.notify(1, notification);
+        }
     }
 
     public static void notifyNewestSubject(Context caller) {
@@ -56,12 +59,13 @@ public class WidgetUtils {
             return;
         }
         String[] newestSubject = MainActivity.bangDiemAll.get(newSubjectCount - 1).split("__");
-        WidgetUtils.sendNotification(caller,
+        Subject subject = Subject.createSubject(newestSubject);
+        sendNotification(caller,
                 "Cập nhật bảng điểm",
-                "Môn:" + newestSubject[2] +
-                        "  GK:" + newestSubject[5] +
-                        "  CK:" + newestSubject[6] +
-                        "  Loại:" + newestSubject[7]);
+                "GK:" + subject.getMidTermScore() +
+                        "  CK:" + subject.getFinalExamScore() +
+                        "  Loại:" + subject.getRank() +
+                        "  Môn:" + subject.getCourseName());
 
     }
 

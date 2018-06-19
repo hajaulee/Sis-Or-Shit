@@ -69,6 +69,14 @@ public class PostTask extends AsyncTask<String, String, String> {
     private boolean connected = false;
     private PostTask startPostTask;
 
+    public void setCancel(boolean cancel) {
+        isCancel = cancel;
+        if (startPostTask != null)
+            startPostTask.setCancel(true);
+    }
+
+    private boolean isCancel = false;
+
     public PostTask(Activity msender, PostTaskAction mtask) {
         this.sender = msender;
         this.task = mtask;
@@ -81,7 +89,7 @@ public class PostTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... data) {
-        if (isCancelled())
+        if (isCancel)
             return null;
         HttpParams httpParams = new BasicHttpParams();
 
@@ -130,7 +138,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                 responseString = EntityUtils.toString(entity, "UTF-8");
                 int vLogout = responseString.indexOf("vLogout");
                 if (vLogout == -1) {
-                        //Toast.makeText(sender!=null?sender:context, "Có lỗi xảy ra!", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(sender!=null?sender:context, "Có lỗi xảy ra!", Toast.LENGTH_LONG).show();
                     Log.e(UpdateMarkService.TAG, "Mark list load fail");
 //                    Log.e(UpdateMarkService.TAG, acc + pass);
                     return "";
@@ -148,7 +156,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                 httppost.addHeader("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36");
                 printToScreen("Khởi tạo kết nối");
-                while (flag && !isCancelled()) {
+                while (flag && !isCancel) {
                     Log.d("Start", "tack 2");
                     response = MainActivity.registerHttpClient.execute(httppost);
                     Log.d("Task", task + " Pass :" + 2);
@@ -329,11 +337,11 @@ public class PostTask extends AsyncTask<String, String, String> {
     @SuppressWarnings("unchecked")
     @Override
     protected void onPostExecute(String ecec) {
-        if (isCancelled())
+        if (isCancel)
             return;
         Log.d("End Task", task.name());
         if (task.equals(LOGIN_DKSIS_WITH_CAPTCHA)) {
-            if (!connected && !isCancelled()) {
+            if (!connected && !isCancel) {
                 Snackbar.make(sender.getCurrentFocus(), "Máy chủ lỗi, đang đăng nhập lại!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 //doInBackground("",acc,pass);
@@ -404,10 +412,11 @@ public class PostTask extends AsyncTask<String, String, String> {
 
             boolean allowAlwaysShowNotify = UpdateMarkService.allowAlwaysShow(context);
             if (newSubjectCount > currentSubjectCount || allowAlwaysShowNotify) {
-                WidgetUtils.notifyNewestSubject(sender!=null?sender:context);
+                WidgetUtils.notifyNewestSubject(sender != null ? sender : context);
             }
             Log.d(UpdateMarkService.TAG, "AlwaysShow: " + allowAlwaysShowNotify);
-            saveMarkList();
+            if (newSubjectCount >= currentSubjectCount)
+                saveMarkList();
             if (task.equals(LOGIN_SIS_GET_MARK_TABLE)) {
                 sender.runOnUiThread(new Runnable() {
                     @Override
@@ -467,8 +476,8 @@ public class PostTask extends AsyncTask<String, String, String> {
     }
 
     public void saveMarkList() {
-        File file = new File((sender!=null?sender:context).getApplicationInfo().dataDir + "/marktable.jav");
-        File file1 = new File((sender!=null?sender:context).getApplicationInfo().dataDir + "/hocki.jav");
+        File file = new File((sender != null ? sender : context).getApplicationInfo().dataDir + "/marktable.jav");
+        File file1 = new File((sender != null ? sender : context).getApplicationInfo().dataDir + "/hocki.jav");
         try {
             BufferedWriter br = new BufferedWriter(new FileWriter(file));
             BufferedWriter br1 = new BufferedWriter(new FileWriter(file1));

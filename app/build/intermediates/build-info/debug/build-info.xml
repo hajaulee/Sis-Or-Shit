@@ -5,24 +5,24 @@
     build-mode="COLD"
     density="420dpi"
     format="10"
-    ir-eligibility="FIELD_REMOVED"
+    ir-eligibility="COMPATIBLE"
     plugin-version="3.1.0"
-    timestamp="1529283638817"
+    timestamp="1529427363977"
     token="4567801061284540684"
     verifier="COLD_SWAP_REQUESTED" >
 
     <task
         name="javac"
-        duration="2523" />
+        duration="705" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="226" />
+        duration="21" />
     <task
         name="verifier"
-        duration="71" />
+        duration="7" />
 
     <artifact
         location="F:\Android\Project\Sisorshit\app\build\intermediates\split-apk\debug\slices\slice_6.apk"
@@ -30,7 +30,7 @@
 
     <build
         build-mode="FULL"
-        timestamp="1529281105193"
+        timestamp="1529423737332"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="F:\Android\Project\Sisorshit\app\build\intermediates\split-apk\debug\slices\slice_6.apk"
@@ -71,8 +71,8 @@
     </build>
     <build
         build-mode="COLD"
-        ir-eligibility="FIELD_REMOVED"
-        timestamp="1529283638817"
+        ir-eligibility="COMPATIBLE"
+        timestamp="1529427363977"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
             location="F:\Android\Project\Sisorshit\app\build\intermediates\split-apk\debug\slices\slice_6.apk"

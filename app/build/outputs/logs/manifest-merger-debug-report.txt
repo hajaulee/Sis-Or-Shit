@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
-INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
-INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
-INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
 MERGED from [com.android.support:design:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\0a88e08d930c17687708f5811098667c\AndroidManifest.xml:17:1-31:12
 MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\71a1ff39337d9e6d552d033becc11b22\AndroidManifest.xml:17:1-31:12
 MERGED from [com.android.support:transition:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\transition-26.1.0.aar\d787f61759a793891f5d983596a2dce7\AndroidManifest.xml:17:1-28:12
@@ -18,20 +18,20 @@ MERGED from [com.android.support:recyclerview-v7:26.1.0] C:\Users\HaJaU\.gradle\
 MERGED from [com.android.support:support-core-ui:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\885880e71a3ec74494e2ca5bc19a95b1\AndroidManifest.xml:17:1-31:12
 MERGED from [com.android.support:support-compat:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\e0be6c885cc8e1e337ad2a7a466f37ea\AndroidManifest.xml:17:1-31:12
 MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\2f60bf222c257d6641b5420c233fd8fc\AndroidManifest.xml:17:1-30:12
-INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
-INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
-INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
+INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
 	package
 		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:3:5-37
 		INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml
 		INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
 		INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml
 	android:versionCode
 		INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-37:12
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:1-38:12
 		INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:2:11-69
@@ -55,14 +55,18 @@ uses-permission#android.permission.USE_FINGERPRINT
 ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:9:5-74
 	android:name
 		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:9:22-71
-uses-feature#android.hardware.fingerprint
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:10:5-11:35
-	android:required
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:11:9-33
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:10:5-79
 	android:name
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:10:19-62
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:10:22-76
+uses-feature#android.hardware.fingerprint
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:11:5-12:35
+	android:required
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:12:9-33
+	android:name
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:11:19-62
 application
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:12:5-35:19
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:13:5-36:19
 MERGED from [com.android.support:design:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\0a88e08d930c17687708f5811098667c\AndroidManifest.xml:25:5-29:19
 MERGED from [com.android.support:design:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\design-26.1.0.aar\0a88e08d930c17687708f5811098667c\AndroidManifest.xml:25:5-29:19
 MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\71a1ff39337d9e6d552d033becc11b22\AndroidManifest.xml:25:5-29:19
@@ -92,47 +96,47 @@ MERGED from [com.android.support:support-compat:26.1.0] C:\Users\HaJaU\.gradle\c
 MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\2f60bf222c257d6641b5420c233fd8fc\AndroidManifest.xml:24:5-28:19
 MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\HaJaU\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\2f60bf222c257d6641b5420c233fd8fc\AndroidManifest.xml:24:5-28:19
 	android:supportsRtl
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:17:9-35
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:18:9-35
 	android:label
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:15:9-41
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:16:9-41
 	android:roundIcon
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:16:9-54
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:17:9-54
 	android:icon
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:14:9-43
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:15:9-43
 	android:allowBackup
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:13:9-35
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:14:9-35
 	android:theme
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:18:9-40
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:19:9-40
 activity#com.hajaulee.sisorshit.MainActivity
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:19:9-27:20
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:20:9-28:20
 	android:label
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:21:13-45
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:22:13-45
 	android:theme
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:22:13-56
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:23:13-56
 	android:name
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:20:13-41
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:21:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:23:13-26:29
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:24:13-27:29
 action#android.intent.action.MAIN
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:24:17-69
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:25:17-69
 	android:name
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:24:25-66
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:25:25-66
 category#android.intent.category.LAUNCHER
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:25:17-77
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:26:17-77
 	android:name
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:25:27-74
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:26:27-74
 activity#com.hajaulee.sisorshit.LoginScreen
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:28:9-33:20
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:29:9-34:20
 	android:screenOrientation
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:31:13-49
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:32:13-49
 	android:label
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:30:13-42
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:31:13-42
 	android:name
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:29:13-62
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:30:13-62
 service#com.hajaulee.sisorshit.UpdateMarkService
-ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:34:9-53
+ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:35:9-53
 	android:name
-		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:34:18-51
+		ADDED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml:35:18-51
 uses-sdk
 INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from F:\Android\Project\Sisorshit\app\src\main\AndroidManifest.xml
