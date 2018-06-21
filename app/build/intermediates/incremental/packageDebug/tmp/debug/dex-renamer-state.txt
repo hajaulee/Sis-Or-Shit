@@ -1,4 +1,4 @@
-#Tue Jun 19 20:36:20 ICT 2018
+#Thu Jun 21 19:14:43 ICT 2018
 base.0=F\:\\Android\\Project\\Sisorshit\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\11
 path.1=classes.dex
 renamed.1=classes2.dex

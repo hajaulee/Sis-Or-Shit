@@ -3,7 +3,9 @@ package com.hajaulee.sisorshit;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -25,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -88,7 +91,14 @@ public class MainActivity extends AppCompatActivity
     Toolbar toolbar;
     Spinner dropdown;
     private PostTask startPostTask;
+
+    public ImageView getCaptchaView() {
+        return captchaView;
+    }
+
+    private ImageView captchaView;
     private static MainActivity instance;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         //Load các thành phần của chương trình như Buttons, ListView, Spinner
         loadButtonsAndListview();
+        captchaView = findViewById(R.id.imageView);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,7 +213,8 @@ public class MainActivity extends AppCompatActivity
             startPostTask = null;
             findViewById(R.id.classCode).setEnabled(true);
             findViewById(R.id.add).setEnabled(true);
-            findViewById(R.id.start).setEnabled(true);
+            findViewById(R.id.start).setVisibility(View.VISIBLE);
+            captchaView.setVisibility(View.INVISIBLE);
             findViewById(R.id.fab).setVisibility(View.VISIBLE);
             return true;
         }else if (id == R.id.action_showNotify){
@@ -444,8 +456,7 @@ public class MainActivity extends AppCompatActivity
                 TextView thanhTich = (TextView) findViewById(R.id.thanhtich);
                 if (position == 0) {
                     thanhTich.setText("");
-                    for (String a : bangDiemAll)
-                        bangDiem.add(a);
+                    bangDiem.addAll(bangDiemAll);
                 } else {
                     String text = ((TextView) selectedItemView).getText().toString();
 
@@ -455,7 +466,7 @@ public class MainActivity extends AppCompatActivity
                         text = text.substring(text.lastIndexOf(' ') + 1);
                         String[] rank = text.split("/");
                         for (String a : bangDiemAll)
-                            if (a.substring(a.length() - 3).indexOf(rank[0]) != -1 || a.substring(a.length() - 3).indexOf(rank[rank.length - 1]) != -1) {
+                            if (a.substring(a.length() - 3).contains(rank[0]) || a.substring(a.length() - 3).contains(rank[rank.length - 1])) {
                                 bangDiem.add(a);
                                 mon++;
                                 tin += Integer.parseInt(a.split("__")[3]);
@@ -471,13 +482,13 @@ public class MainActivity extends AppCompatActivity
                             tongTc += tc;
                             currentCPA += tc * diemChuDoiRaSo(infoMon[7]);
 
-                            if (a.indexOf(text) != -1)
+                            if (a.contains(text))
                                 bangDiem.add(a);
                             Log.d(text, a);
                         }
                         currentCPA = Math.floor(currentCPA / tongTc * 100) / 100;
                         for (String a : ketQuaHocTap)
-                            if (a.indexOf(text) != -1) {
+                            if (a.contains(text)) {
                                 String[] jav = a.split("__");
                                 thanhTich.setText(Html.fromHtml("<b><font color=\"red\" >CPA:</font> " + jav[2] +
                                         "&nbsp;&nbsp;&nbsp;&nbsp;<font color=\"green\" >GPA:</font> " + jav[1] + "</b><br>TC qua: " + jav[3] +
@@ -535,6 +546,7 @@ public class MainActivity extends AppCompatActivity
         ls.setAdapter(adapter);
         addClassToList();
         bangDiemAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, bangDiem) {
+            @NonNull
             @Override
             public View getView(int pos, View v, ViewGroup p) {
                 View view = super.getView(pos, v, p);
@@ -598,21 +610,14 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 startRegisterSubject();
-//                findViewById(R.id.classCode).setEnabled(false);
-//                findViewById(R.id.add).setEnabled(false);
-//                findViewById(R.id.start).setEnabled(false);
-//                PostTask startPostTask = new PostTask(MainActivity.this, LoginScreen.LOGIN_DKSIS_WITH_CAPTCHA);
-//                startPostTask.execute("ctl00$cLogIn1$bt_cLogIn", acc, pass);
             }
         });
         reload.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+
                 refreshMarkList(v, dropdown);
-//                dropdown.setSelection(0);
-//                PostTask x = new PostTask(MainActivity.this, LoginScreen.LOGIN_SIS_GET_MARK_TABLE);
-//                x.execute("ctl00$cLogIn1$bt_cLogIn", acc, pass);
             }
         });
     }
@@ -620,7 +625,8 @@ public class MainActivity extends AppCompatActivity
     public void startRegisterSubject() {
         findViewById(R.id.classCode).setEnabled(false);
         findViewById(R.id.add).setEnabled(false);
-        findViewById(R.id.start).setEnabled(false);
+        captchaView.setVisibility(View.VISIBLE);
+        findViewById(R.id.start).setVisibility(View.INVISIBLE);
         findViewById(R.id.fab).setVisibility(View.INVISIBLE);
         startPostTask = new PostTask(MainActivity.this, LOGIN_DKSIS_WITH_CAPTCHA);
         startPostTask.execute("ctl00$cLogIn1$bt_cLogIn", acc, pass);
@@ -637,7 +643,9 @@ public class MainActivity extends AppCompatActivity
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
         }
     }
 

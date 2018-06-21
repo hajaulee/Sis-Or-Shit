@@ -38,7 +38,7 @@ public class WidgetUtils {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.mark_updated)
-                .setLargeIcon(BitmapFactory.decodeResource(caller.getResources(), R.mipmap.ic_launcher))
+//                .setLargeIcon(BitmapFactory.decodeResource(caller.getResources(), R.mipmap.ic_launcher))
                 .setContentTitle(title)
                 .setContentText(message)
                 .setContentInfo("INFO")
@@ -52,20 +52,23 @@ public class WidgetUtils {
         }
     }
 
-    public static void notifyNewestSubject(Context caller) {
+    public static void notifyNewestSubject(Context caller, int oldCount, int newCount) {
         int newSubjectCount = MainActivity.bangDiemAll.size();
         if (newSubjectCount == 0) {
-            sendNotification(caller, "Error", "Not found");
+            sendNotification(caller, "Error: " + oldCount + "x" + newCount, "Not found");
+//            MainActivity.getInstance().loadMarkList();
             return;
         }
         String[] newestSubject = MainActivity.bangDiemAll.get(newSubjectCount - 1).split("__");
         Subject subject = Subject.createSubject(newestSubject);
-        sendNotification(caller,
-                "Cập nhật bảng điểm",
-                "GK:" + subject.getMidTermScore() +
-                        "  CK:" + subject.getFinalExamScore() +
-                        "  Loại:" + subject.getRank() +
-                        "  Môn:" + subject.getCourseName());
+        if (subject != null) {
+            sendNotification(caller,
+                    "Cập nhật bảng điểm: " +  oldCount + " + " + (newCount - oldCount)+ " môn" ,
+                    "GK: " + subject.getMidTermScore() +
+                            "  CK: " + subject.getFinalExamScore() +
+                            "  Loại: " + subject.getRank() +
+                            "  Môn: " + subject.getCourseName());
+        }
 
     }
 

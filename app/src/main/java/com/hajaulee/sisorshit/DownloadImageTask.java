@@ -15,11 +15,12 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     }
 
     protected Bitmap doInBackground(String... urls) {
-        String urldisplay = urls[0];
+        String displayUrl = urls[0];
         Bitmap mIcon11 = null;
         try {
-          InputStream in = new java.net.URL(urldisplay).openStream();
+          InputStream in = new java.net.URL(displayUrl).openStream();
           mIcon11 = BitmapFactory.decodeStream(in);
+          MainActivity.getInstance().getCaptchaView().setImageBitmap(mIcon11);
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             e.printStackTrace();

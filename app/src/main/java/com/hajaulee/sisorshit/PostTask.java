@@ -35,9 +35,11 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import static com.hajaulee.sisorshit.PostTaskAction.LOGIN_DKSIS_WITH_CAPTCHA;
 import static com.hajaulee.sisorshit.PostTaskAction.LOGIN_SIS;
@@ -56,9 +59,8 @@ import static com.hajaulee.sisorshit.PostTaskAction.UPDATE_MARK_LIST;
 
 @SuppressWarnings("deprecation")
 public class PostTask extends AsyncTask<String, String, String> {
-    private Activity sender = null;
-    private Context context = null;
-    private String captchaLink;
+    private Activity sender;
+    public Context context;
     private PostTaskAction task;
     private HttpResponse response;
     private HttpEntity entity;
@@ -66,6 +68,7 @@ public class PostTask extends AsyncTask<String, String, String> {
     private String responseString = "";
     protected String acc;
     protected String pass;
+
     private boolean connected = false;
     private PostTask startPostTask;
 
@@ -80,6 +83,7 @@ public class PostTask extends AsyncTask<String, String, String> {
     public PostTask(Activity msender, PostTaskAction mtask) {
         this.sender = msender;
         this.task = mtask;
+        this.context = null;
     }
 
     public PostTask(Context msender, PostTaskAction mtask) {
@@ -167,13 +171,21 @@ public class PostTask extends AsyncTask<String, String, String> {
                     // printToScreen("Loading captcha");
                     toOutputFile("pre_dk-sis.html", responseString);
                     String captchaLink = getLinkCaptcha(responseString);
-                    Bitmap capImage = getSmallBitmapFromNet(captchaLink);
+                    final Bitmap capImage = getSmallBitmapFromNet(captchaLink);
                     // printToScreen("Captcha loaded");
                     if (capImage != null || idPos != -1) {
                         if (idPos == -1) {
                             Log.d("Task", task + " Pass :" + 3);
                             //imCaptcha = capImage;
                             String captchaText = StaticFunc.captchaToText(capImage, MainActivity.digit);
+                            if (sender != null){
+                                sender.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ((MainActivity)sender).getCaptchaView().setImageBitmap(capImage);
+                                    }
+                                });
+                            }
                             Log.d("Trying with Captcha::", "Captcha::" + captchaText);
                             showLoginProgress("Captcha:" + captchaText);
                             // Show Image function is deleted here
@@ -211,7 +223,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                                     .fromHtml(responseString.substring(responseString.indexOf(">", lbStatusPos) + 1,
                                             responseString.indexOf("<", lbStatusPos)))
                                     .toString();
-                            if (lbStatus.indexOf("Captcha") == -1) {
+                            if (!lbStatus.contains("Captcha")) {
                                 printToScreen(lbStatus);
                                 sender.runOnUiThread(new Runnable() {
                                     @Override
@@ -224,7 +236,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                         }
                         if (ccCaptcha_TB_EC_Pos != -1) {
                             ccCaptcha_TB_EC = responseString.substring(ccCaptcha_TB_EC_Pos, ccCaptcha_TB_EC_Pos + 178);
-                            if (ccCaptcha_TB_EC.indexOf("hidden") != -1) {
+                            if (ccCaptcha_TB_EC.contains("hidden")) {
                                 flag = false;
                                 connected = true;
                                 // printToScreen("Cap correct");
@@ -243,6 +255,12 @@ public class PostTask extends AsyncTask<String, String, String> {
                                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36");
                             nameValuePairs = new ArrayList<NameValuePair>();
                             int count = 0;
+
+                            if (MainActivity.classList.isEmpty()){
+                                isCancel = true;
+                                return "";
+                            }
+
                             for (String a : MainActivity.classList) {
                                 try {
                                     nameValuePairs = setDataRegisterRequest(a, newDkSisState);
@@ -273,7 +291,7 @@ public class PostTask extends AsyncTask<String, String, String> {
 //
 //									});
                                     printToScreen(Html.fromHtml(responseString.substring(xstart + 1, xend)).toString());
-                                } catch (Exception e) {
+                                } catch (Exception ignored) {
                                 }
 
                                 if (responseString.length() > 5000) {
@@ -310,7 +328,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                                 int start = responseString.indexOf(">", messPos);
                                 int end = responseString.indexOf("<", start);
                                 printToScreen(Html.fromHtml(responseString.substring(start + 1, end)).toString());
-                            } catch (Exception e) {
+                            } catch (Exception ignored) {
                             }
                             // Sign out account
                             // httpclient.execute(new
@@ -342,7 +360,7 @@ public class PostTask extends AsyncTask<String, String, String> {
         Log.d("End Task", task.name());
         if (task.equals(LOGIN_DKSIS_WITH_CAPTCHA)) {
             if (!connected && !isCancel) {
-                Snackbar.make(sender.getCurrentFocus(), "Máy chủ lỗi, đang đăng nhập lại!", Snackbar.LENGTH_LONG)
+                Snackbar.make(sender.findViewById(R.id.fab), "Máy chủ lỗi, đang đăng nhập lại!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 //doInBackground("",acc,pass);
                 startPostTask = new PostTask(sender, LOGIN_DKSIS_WITH_CAPTCHA);
@@ -361,7 +379,6 @@ public class PostTask extends AsyncTask<String, String, String> {
             }
             //sendNotification("Cập nhật bảng điểm", new Date().toString());
             MainActivity.spin.clear();
-            int currentSubjectCount = MainActivity.bangDiemAll.size();
             MainActivity.bangDiem.clear();
             MainActivity.ketQuaHocTap.clear();
             MainActivity.spin.add("Tất cả");
@@ -373,14 +390,14 @@ public class PostTask extends AsyncTask<String, String, String> {
                 int start = responseString.indexOf("\">", subjectRowPos);
                 start = responseString.indexOf("\">", start + 1);
                 int end = responseString.indexOf("<", start);
-                String row = Html.fromHtml(responseString.substring(start + 2, end)).toString();
+                StringBuilder row = new StringBuilder(Html.fromHtml(responseString.substring(start + 2, end)).toString());
                 for (int a = 0; a < 7; a++) {
                     start = responseString.indexOf("\">", end);
                     end = responseString.indexOf("<", start);
-                    row += "__" + Html.fromHtml(responseString.substring(start + 2, end)).toString();
+                    row.append("__").append(Html.fromHtml(responseString.substring(start + 2, end)).toString());
                 }
-                Log.d("cc", row);
-                MainActivity.bangDiem.add(row);
+                Log.d("cc", row.toString());
+                MainActivity.bangDiem.add(row.toString());
                 hocky.add("Học kỳ: " + row.substring(0, row.indexOf("_")));
             }
             List l = new ArrayList(hocky);
@@ -393,14 +410,14 @@ public class PostTask extends AsyncTask<String, String, String> {
                 int start = responseString.indexOf("\">", kihocRowPos);
                 start = responseString.indexOf("\">", start + 1);
                 int end = responseString.indexOf("<", start);
-                String row = Html.fromHtml(responseString.substring(start + 2, end)).toString();
+                StringBuilder row = new StringBuilder(Html.fromHtml(responseString.substring(start + 2, end)).toString());
                 //MainActivity.spin.add("Học kì: " + row);
                 for (int a = 0; a < 6; a++) {
                     start = responseString.indexOf("\">", end);
                     end = responseString.indexOf("<", start);
-                    row += "__" + Html.fromHtml(responseString.substring(start + 2, end)).toString();
+                    row.append("__").append(Html.fromHtml(responseString.substring(start + 2, end)).toString());
                 }
-                MainActivity.ketQuaHocTap.add(row);
+                MainActivity.ketQuaHocTap.add(row.toString());
             }
             MainActivity.spin.add("Điểm A/A+");
             MainActivity.spin.add("Điểm B/B+");
@@ -409,13 +426,13 @@ public class PostTask extends AsyncTask<String, String, String> {
             MainActivity.spin.add("Điểm F");
             MainActivity.bangDiemAll = (ArrayList<String>) MainActivity.bangDiem.clone();
             int newSubjectCount = MainActivity.bangDiemAll.size();
-
+            int oldSubjectCount = sizeOfScoreList();
             boolean allowAlwaysShowNotify = UpdateMarkService.allowAlwaysShow(context);
-            if (newSubjectCount > currentSubjectCount || allowAlwaysShowNotify) {
-                WidgetUtils.notifyNewestSubject(sender != null ? sender : context);
+            if (newSubjectCount > oldSubjectCount && oldSubjectCount != 0 || allowAlwaysShowNotify) {
+                WidgetUtils.notifyNewestSubject(getContext(), oldSubjectCount, newSubjectCount);
             }
             Log.d(UpdateMarkService.TAG, "AlwaysShow: " + allowAlwaysShowNotify);
-            if (newSubjectCount >= currentSubjectCount)
+            if (newSubjectCount >= oldSubjectCount)
                 saveMarkList();
             if (task.equals(LOGIN_SIS_GET_MARK_TABLE)) {
                 sender.runOnUiThread(new Runnable() {
@@ -465,7 +482,7 @@ public class PostTask extends AsyncTask<String, String, String> {
                 Button login = (Button) sender.findViewById(R.id.login);
                 login.setVisibility(View.VISIBLE);
                 login.startAnimation(tran);
-                if (responseString.indexOf("MainContent_UserName") != -1)
+                if (responseString.contains("MainContent_UserName"))
                     Toast.makeText(sender, "Tài khoản hoặc mật khẩu không đúng!", Toast.LENGTH_LONG).show();
                 else {
                     Toast.makeText(sender, "Lỗi mạng!", Toast.LENGTH_LONG).show();
@@ -475,9 +492,25 @@ public class PostTask extends AsyncTask<String, String, String> {
 
     }
 
-    public void saveMarkList() {
-        File file = new File((sender != null ? sender : context).getApplicationInfo().dataDir + "/marktable.jav");
-        File file1 = new File((sender != null ? sender : context).getApplicationInfo().dataDir + "/hocki.jav");
+    private Context getContext(){
+        return sender==null?context:sender;
+    }
+    private int sizeOfScoreList(){
+        File file = new File(getContext().getApplicationInfo().dataDir + "/marktable.jav");
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String[] markArray = br.readLine().split("===");
+            br.close();
+            return markArray.length;
+        } catch (Exception e){
+            return 0;
+        }
+    }
+
+    private void saveMarkList() {
+        File file = new File(getContext().getApplicationInfo().dataDir + "/marktable.jav");
+        File file1 = new File(getContext().getApplicationInfo().dataDir + "/hocki.jav");
         try {
             BufferedWriter br = new BufferedWriter(new FileWriter(file));
             BufferedWriter br1 = new BufferedWriter(new FileWriter(file1));
@@ -491,15 +524,15 @@ public class PostTask extends AsyncTask<String, String, String> {
                 s += a + "===";
             br1.write(s);
             br1.close();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }
 
-    public void showLoginProgress(String explain) {
+    private void showLoginProgress(String explain) {
         String mms = ((TextView) sender.findViewById(R.id.outScreen)).getText().toString();
         int c = mms.length() - mms.indexOf(".");
-        StringBuffer toPrint = new StringBuffer("Đang đăng nhập");
+        StringBuilder toPrint = new StringBuilder("Đang đăng nhập, ");
         c = c > mms.length() ? 0 : (c + 1) % 6;
         for (int i = 0; i < c; i++)
             toPrint.append('.');
@@ -507,18 +540,17 @@ public class PostTask extends AsyncTask<String, String, String> {
 
     }
 
-    public String getLinkCaptcha(String webContent) {
+    private String getLinkCaptcha(String webContent) {
         int captchaStart = webContent.indexOf("/DXB.axd?DXCache=");
         if (captchaStart == -1) {
             Log.d("Server error", "ahihi");
             return null;
         }
         int captchaEnd = responseString.indexOf('"', captchaStart);
-        captchaLink = "http://dk-sis.hust.edu.vn" + responseString.substring(captchaStart, captchaEnd);
-        return captchaLink;
+        return "http://dk-sis.hust.edu.vn" + responseString.substring(captchaStart, captchaEnd);
     }
 
-    public void setProgressSmoothly(ProgressBar bar, int progress) {
+    private void setProgressSmoothly(ProgressBar bar, int progress) {
         ProgressBarAnimation anim = new ProgressBarAnimation(bar, bar.getProgress(), progress);
         anim.setDuration(1000);
         try {
@@ -528,7 +560,7 @@ public class PostTask extends AsyncTask<String, String, String> {
         }
     }
 
-    public void printToScreen(final String mss) {
+    private void printToScreen(final String mss) {
         sender.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -537,7 +569,7 @@ public class PostTask extends AsyncTask<String, String, String> {
         });
     }
 
-    public ArrayList<NameValuePair> setDataRegisterRequest(String className, DkSisState newDkSisState) {
+    private ArrayList<NameValuePair> setDataRegisterRequest(String className, DkSisState newDkSisState) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(20);
 
         int listCallBackStatePos;
@@ -586,7 +618,7 @@ public class PostTask extends AsyncTask<String, String, String> {
 
     }
 
-    public void toOutputFile(String fname, String data) {
+    private void toOutputFile(String fname, String data) {
         try {
             FileOutputStream is = new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + fname);
             is.write(data.getBytes());
@@ -597,10 +629,9 @@ public class PostTask extends AsyncTask<String, String, String> {
     }
 
     public Bitmap getBitmpFromLink(String url) {
-        String urldisplay = url;
         Bitmap mIcon11 = null;
         try {
-            InputStream in = new URL(urldisplay).openStream();
+            InputStream in = new URL(url).openStream();
             mIcon11 = BitmapFactory.decodeStream(in);
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -609,7 +640,7 @@ public class PostTask extends AsyncTask<String, String, String> {
         return mIcon11;
     }
 
-    public int updateRegisteredSubjectList(String src, int idPos, String subjectTrtabId) {
+    private int updateRegisteredSubjectList(String src, int idPos, String subjectTrtabId) {
         idPos -= 100;
         int tinVaMon = 0;
         MainActivity.arrList.clear();
@@ -671,15 +702,14 @@ public class PostTask extends AsyncTask<String, String, String> {
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
+            return BitmapFactory.decodeStream(input);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public Bitmap getSmallBitmapFromNet(String urlString) {
+    private Bitmap getSmallBitmapFromNet(String urlString) {
         HttpGet httpRequest;
         try {
             httpRequest = new HttpGet(new URL(urlString).toURI());
@@ -687,8 +717,7 @@ public class PostTask extends AsyncTask<String, String, String> {
             HttpEntity entity = response.getEntity();
             BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
             InputStream is = bufHttpEntity.getContent();
-            Bitmap bitmap = BitmapFactory.decodeStream(is);
-            return bitmap;
+            return BitmapFactory.decodeStream(is);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -696,7 +725,7 @@ public class PostTask extends AsyncTask<String, String, String> {
         }
     }
 
-    public void saveAccAndPass() {
+    private void saveAccAndPass() {
         String acc_pass = acc + "_jav_number_one_" + pass;
         try {
             FileOutputStream loginedData = new FileOutputStream(
@@ -709,7 +738,7 @@ public class PostTask extends AsyncTask<String, String, String> {
         }
     }
 
-    public DkSisState getDkSisState() {
+    private DkSisState getDkSisState() {
         int vstaPos = responseString.indexOf("id=\"__VIEWSTATE\"");
         String viewState = "";
         if (vstaPos != -1)
@@ -725,7 +754,7 @@ public class PostTask extends AsyncTask<String, String, String> {
         return new DkSisState(viewState, vstagen, eventvalid);
     }
 
-    public boolean setFileContentToDataDir(String fileName, String content) {
+    private boolean setFileContentToDataDir(String fileName, String content) {
         File file = new File(sender.getApplicationInfo().dataDir + "/" + fileName);
         try {
             BufferedWriter br = new BufferedWriter(new FileWriter(file));
@@ -747,9 +776,9 @@ public class PostTask extends AsyncTask<String, String, String> {
 }
 
 class DkSisState {
-    public String viewstate;
-    public String viewstategen;
-    public String eventvalid;
+    private String viewstate;
+    private String viewstategen;
+    private String eventvalid;
 
     public DkSisState(String viewstate, String viewstategen, String eventvalid) {
         this.viewstate = viewstate;
