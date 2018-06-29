@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
@@ -35,15 +36,20 @@ public class WidgetUtils {
                 PendingIntent.getActivity(caller, 0, intent, FLAG_ONE_SHOT);
 
         b.setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.mark_updated)
 //                .setLargeIcon(BitmapFactory.decodeResource(caller.getResources(), R.mipmap.ic_launcher))
                 .setContentTitle(title)
                 .setContentText(message)
                 .setContentInfo("INFO")
+//                .setStyle(
                 .setContentIntent(contentIntent);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            b.setPriority(NotificationManager.IMPORTANCE_HIGH);
+        }else{
+            b.setPriority(Notification.PRIORITY_MAX);
+        }
         NotificationManager nm = (NotificationManager) caller.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = b.build();
 
@@ -84,17 +90,16 @@ public class WidgetUtils {
             TextView thanhTich = (TextView) sender.findViewById(R.id.thanhtich);
             if (position == 0) {
                 thanhTich.setText("");
-                for (String a : MainActivity.bangDiemAll)
-                    MainActivity.bangDiem.add(a);
+                MainActivity.bangDiem.addAll(MainActivity.bangDiemAll);
             } else {
                 String text = ((TextView) selectedItemView).getText().toString();
-                if (text.indexOf("20") == -1) {
+                if (!text.contains("20")) {
                     int mon = 0;
                     int tin = 0;
                     text = text.substring(text.lastIndexOf(' ') + 1);
                     String[] rank = text.split("/");
                     for (String a : MainActivity.bangDiemAll)
-                        if (a.substring(a.length() - 3).indexOf(rank[0]) != -1 || a.substring(a.length() - 3).indexOf(rank[rank.length - 1]) != -1) {
+                        if (a.substring(a.length() - 3).contains(rank[0]) || a.substring(a.length() - 3).contains(rank[rank.length - 1])) {
                             MainActivity.bangDiem.add(a);
                             mon++;
                             tin += Integer.parseInt(a.split("__")[3]);
@@ -103,12 +108,12 @@ public class WidgetUtils {
                 } else {
                     text = text.substring(text.lastIndexOf(' ') + 1);
                     for (String a : MainActivity.bangDiemAll) {
-                        if (a.indexOf(text) != -1)
+                        if (a.contains(text))
                             MainActivity.bangDiem.add(a);
                         Log.d(text, a);
                     }
                     for (String a : MainActivity.ketQuaHocTap)
-                        if (a.indexOf(text) != -1) {
+                        if (a.contains(text)) {
                             String[] jav = a.split("__");
                             thanhTich.setText(Html.fromHtml("<b><font color=\"red\" >CPA:</font> " + jav[2] +
                                     "&nbsp;&nbsp;&nbsp;&nbsp;<font color=\"green\" >GPA:</font> " + jav[1] + "</b><br>TC qua: " + jav[3] +

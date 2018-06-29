@@ -5,8 +5,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="chart">チャート</string>
-    <string name="register">単位登録</string>
-    <string name="point_list">単位リスト</string>
+    <string name="register">科目登録</string>
+    <string name="point_list">科目リスト</string>
     <string name="action_stop">ストップ</string>
     <string name="on_off_notify">ON/OFF Always Notify</string>
     <string name="blank"> </string>
@@ -17,7 +17,7 @@
     <string name="logout">ログアウト</string>
     <string name="start">登録開始</string>
     <string name="class_code">授業IDを入力</string>
-    <string name="class_code_list">登録した単位のリスト</string>
+    <string name="class_code_list">登録した科目のリスト</string>
     <string name="add_class">Add</string>
     <string name="reload">更新</string>
     <string name="title">学生情報管理\nシステム</string>

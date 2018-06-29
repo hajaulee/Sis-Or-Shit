@@ -95,6 +95,8 @@ public class UpdateMarkService extends Service {
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
         isRunning = false;
+        WidgetUtils.sendNotification(this, "Service đã dừng", "Destroy");
+        startService(new Intent(this, UpdateMarkService.class));
         super.onDestroy();
     }
 

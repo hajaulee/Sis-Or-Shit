@@ -1,5 +1,6 @@
 package com.hajaulee.sisorshit;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -60,6 +61,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -181,7 +183,9 @@ public class MainActivity extends AppCompatActivity
             showMarkListLayout();
         }
         loadMarkList();
-        startService(new Intent(this, UpdateMarkService.class));
+        if (!isMyServiceRunning(UpdateMarkService.class)) {
+            startService(new Intent(this, UpdateMarkService.class));
+        }
 
     }
 
@@ -202,6 +206,17 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager != null) {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -229,6 +244,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showMarkListLayout() {
+        currentLayoutId = R.id.nav_listmark;
+        toolbar.setTitle(R.string.point_list);
         showLayout(R.id.point_list_layout, R.drawable.ic_refresh);
         if (bangDiemAll.isEmpty()) {
             loadMarkList();
@@ -309,10 +326,8 @@ public class MainActivity extends AppCompatActivity
             Collections.sort(l);
             spin.addAll(l);
 
-            for (String a : markArray1) {
-                ketQuaHocTap.add(a);
-//                spin.add("Học kì: " + a.substring(0, a.indexOf("_")));
-            }
+            //                spin.add("Học kì: " + a.substring(0, a.indexOf("_")));
+            ketQuaHocTap.addAll(Arrays.asList(markArray1));
             spin.add("Điểm A/A+");
             spin.add("Điểm B/B+");
             spin.add("Điểm C/C+");
@@ -334,7 +349,9 @@ public class MainActivity extends AppCompatActivity
         for (String file : files) {
             try {
                 File f = new File(getApplicationInfo().dataDir + "/" + file);
-                f.delete();
+                final boolean deleted = f.delete();
+                if (deleted)
+                    Log.d("Success","File delete successful");
             } catch (Exception e) {
                 Log.d("File delete error", e.toString());
             }
